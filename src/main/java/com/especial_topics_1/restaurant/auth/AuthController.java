@@ -8,6 +8,7 @@ import com.especial_topics_1.restaurant.user.User;
 import com.especial_topics_1.restaurant.auth.dto.response.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+
+    @Value("${app.cookie.domain}")
+    private String cookieDomain;
 
     @PostMapping("/register")
     public ResponseEntity<String> initiateRegistration(@RequestBody @Valid RegisterUserRequest request) {
@@ -49,16 +53,18 @@ public class AuthController {
 
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.accessToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(15 * 60)
                 .sameSite("Lax")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokens.refreshToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(7 * 24 * 60 * 60)
                 .sameSite("Lax")
                 .build();
@@ -79,19 +85,21 @@ public class AuthController {
 
         ResponseCookie newAccessCookie = ResponseCookie.from("accessToken", tokens.accessToken())
                 .httpOnly(true)
-                .secure(false) // Lembre de mudar para true quando tiver HTTPS
+                .secure(true) // Lembre de mudar para true quando tiver HTTPS
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(15 * 60)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         // Monta o novo Cookie do Refresh Token (Renovando os 7 dias)
         ResponseCookie newRefreshCookie = ResponseCookie.from("refreshToken", tokens.refreshToken())
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(7 * 24 * 60 * 60)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         return ResponseEntity.ok()
@@ -104,13 +112,17 @@ public class AuthController {
     public ResponseEntity<String> logout() {
         ResponseCookie accessToken = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
+                .secure(true)
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(0)
                 .build();
 
         ResponseCookie refreshToken = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
+                .secure(true)
                 .path("/")
+                .domain(cookieDomain)
                 .maxAge(0)
                 .build();
 
