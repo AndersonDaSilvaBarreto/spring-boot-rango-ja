@@ -57,7 +57,7 @@ public class AuthController {
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(15 * 60)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokens.refreshToken())
@@ -66,7 +66,7 @@ public class AuthController {
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(7 * 24 * 60 * 60)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
@@ -89,7 +89,7 @@ public class AuthController {
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(15 * 60)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         // Monta o novo Cookie do Refresh Token (Renovando os 7 dias)
@@ -99,7 +99,7 @@ public class AuthController {
                 .path("/")
                 .domain(cookieDomain)
                 .maxAge(7 * 24 * 60 * 60)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         return ResponseEntity.ok()
